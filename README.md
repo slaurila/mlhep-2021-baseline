@@ -1,8 +1,8 @@
 # MLHEP-2021 Baseline
 ## Dataset
-Dataset is on CoCalc in folder TODO and is available at [Kaggle](https://www.kaggle.com/c/mlhep2021-classification/data)
+Dataset is on CoCalc in folder `/share/competition` and is available at [Kaggle](https://www.kaggle.com/c/mlhep2021-classification/data)
 
-Both archives contain images in `.png` format, the filenames contain the energy and the folder names the particle class.
+The train and test folders contain images in `.png` format. The train filenames contain the energy and the folder names the particle class.
 
 ```
 train
@@ -39,17 +39,19 @@ The dataset are interleaved in the following scheme:
 
 ## Setup without CoCalc
 1. Download the data from [Kaggle](https://www.kaggle.com/c/mlhep2021-classification/data)
-2. Extract it into the repository root with `tar -xvf *.tar.xz`
+2. Extract it with `tar -xvf MLHEP-2021-train.tar.xz && tar -xvf MLHEP-2021-test.tar.xz`
 3. Install [poetry](https://python-poetry.org/docs/#installation)
 4. Set up the poetry environment with `poetry install`
+5. Change `config.ini[DATA][DatasetPath]` to the location of the extracted data
+6. Prefex all your commands with `poetry run`
 
 ## Training
-If you want to retrain the model just run:
+If you want to retrain the model from scratch just run:
 ```
 mv checkpoints checkpoints_bk && python train.py
 ```
 This will move the original checkpoints and run the experiment again.
-Note you can modify `config.ini` to loader the checkpoint without moving the files.
+Note you can modify `config.ini` to load the checkpoint without moving the files.
 
 ## Results 
 To generate the report just run:
@@ -58,8 +60,6 @@ python report.py
 ```
 This will generate `./resultsreport.log` in the current directory containg information and bunch of plots in the `./results/` directory
 
-### Score
-Score = MAE - AUC
 ---
 ### Classification
 ![](results/roc_auc.png)
@@ -75,7 +75,7 @@ Score = MAE - AUC
 ![](results/energy_hist30.0_5.png)
 
 # Submission
-To generate `submission.csv` run:
+To generate `submission_classification.csv.gz` and `submission_regression.csv.gz` run:
 ```
 python generate_submission.py
 ```

@@ -33,15 +33,8 @@ class IDAODataModule(pl.LightningDataModule):
             extensions=self.cfg["DATA"]["Extension"],
         )
 
-        self.public_dataset = InferenceDataset(
-                    main_dir=self.data_dir.joinpath("public_test"),
-                    loader=img_loader,
-                    transform=transforms.Compose(
-                        [transforms.ToTensor(), transforms.CenterCrop(120)]
-                    ),
-                )
-        self.private_dataset = InferenceDataset(
-                    main_dir=self.data_dir.joinpath("private_test"),
+        self.test = InferenceDataset(
+                    main_dir=self.data_dir.joinpath("test"),
                     loader=img_loader,
                     transform=transforms.Compose(
                         [transforms.ToTensor(), transforms.CenterCrop(120)]
@@ -64,7 +57,7 @@ class IDAODataModule(pl.LightningDataModule):
     
     def test_dataloader(self):
         return DataLoader(
-            torch.utils.data.ConcatDataset([self.private_dataset, self.public_dataset]),
+            self.test,
             1,
             num_workers=0,
             shuffle=False

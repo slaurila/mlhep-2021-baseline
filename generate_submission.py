@@ -68,7 +68,10 @@ def main():
     data_frame = pd.DataFrame(dict_pred,
                               columns=["id", "energy", "particle"])
     data_frame.set_index("id", inplace=True)
-    data_frame.to_csv('submission.csv.gz', index=True, header=True, index_label="id")
+    data_frame.to_csv('submission_classification.csv.gz',
+                      index=True, header=True, index_label="id", columns=["particle"])
+    data_frame.to_csv('submission_regression.csv.gz',
+                      index=True, header=True, index_label="id", columns=["energy"])
 
 
 if __name__ == "__main__":
