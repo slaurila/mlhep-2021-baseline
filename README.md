@@ -1,23 +1,15 @@
-# IDAO-21 Baseline
-
+# MLHEP-2021 Baseline
 ## Dataset
-Dataset is available for download through Yandex disk -> [Click here](https://yadi.sk/d/UJ8DEma9LHRMsg).
+Dataset is on CoCalc in folder TODO and is available at [Kaggle](https://www.kaggle.com/c/mlhep2021-classification/data)
 
-Each directory contain images in `.png` format, the filename contain the
-class label information.
-```
-_dataset/
-├── private_test
-│   └── *.png
-├── publis_test
-│   └── *.png
-└── train
-    ├── ER
-    └── NR
+Both archives contain images in `.png` format, the filenames contain the energy and the folder names the particle class.
 
 ```
-Each directory contain bunch of images the image name contain the class label and other informaion.
-The most important part is the class label which is in {1.0, 3.0, 6.0, 10.0, 20.0, 30.0} and has `_keV` suffix.
+train
+├── ER
+└── NR
+```
+The most important part is the particle energy which is in {1.0, 3.0, 6.0, 10.0, 20.0, 30.0} and has `_keV` suffix.
 
 ```
 0.00012752991074573__CYGNO_60_40_ER_30_keV_930V_30cm_IDAO_iso_crop_hist_pic_run4_ev846;1.png
@@ -45,9 +37,11 @@ The dataset are interleaved in the following scheme:
 | 30   |  -   | * |
 * is training; - is testing
 
-
-
-### Dataset distribution
+## Setup without CoCalc
+1. Download the data from [Kaggle](https://www.kaggle.com/c/mlhep2021-classification/data)
+2. Extract it into the repository root with `tar -xvf *.tar.xz`
+3. Install [poetry](https://python-poetry.org/docs/#installation)
+4. Set up the poetry environment with `poetry install`
 
 ## Training
 If you want to retrain the model just run:

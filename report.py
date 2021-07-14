@@ -147,7 +147,6 @@ def main(cfg):
 
     dataset_dm.prepare_data()
     dataset_dm.setup()
-    #dl = dataset_dm.test_dataloader()
     dl = dataset_dm.train_dataloader()
     mae = 0
     variance = 0
@@ -167,7 +166,6 @@ def main(cfg):
         gc.collect()
     logging.info(f'MAE = {mae}')
     logging.info(f'AUC = {auc}')
-    logging.info(f'Score = AUC - MAE: {auc - mae}')
 
 
 if __name__ == "__main__":

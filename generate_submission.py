@@ -16,58 +16,60 @@ from more_itertools import bucket
 
 from idao.data_module import IDAODataModule
 from idao.model import SimpleConv
-from idao.utils import delong_roc_variance
 
 
-
-dict_pred = defaultdict(list)
-
-def make_csv(mode, dataloader, checkpoint_path, cfg):
+def compute_predictions(mode, dataloader, checkpoint_path, cfg):
     torch.multiprocessing.set_sharing_strategy("file_system")
     logging.info("Loading checkpoint")
     model = SimpleConv.load_from_checkpoint(checkpoint_path, mode=mode)
     model = model.cpu().eval()
 
+    dict_pred = defaultdict(list)
     if mode == "classification":
         logging.info("Classification model loaded")
     else:
         logging.info("Regression model loaded")
 
-    for _, (img, name) in enumerate(iter(dataloader)):
+    # TODO(kazevn) batch predictions
+    for img, name in iter(dataloader):
         if mode == "classification":
             dict_pred["id"].append(name[0].split('.')[0])
             output = (1 if torch.round(model(img)["class"].detach()[0][0]) == 0 else 0)
-            dict_pred["classification_predictions"].append(output)
+            dict_pred["particle"].append(output)
 
         else:
             output = model(img)["energy"].detach()
-            dict_pred["regression_predictions"].append(output[0][0].item())
+            dict_pred["energy"].append(output[0][0].item())
+    return dict_pred
 
 
-def main(cfg):
-    PATH = path.Path(cfg["DATA"]["DatasetPath"])
+def main():
+    config = configparser.ConfigParser()
+    config.read("./config.ini")
+    PATH = path.Path(config["DATA"]["DatasetPath"])
 
     dataset_dm = IDAODataModule(
-        data_dir=PATH, batch_size=64, cfg=cfg
+        data_dir=PATH, batch_size=64, cfg=config
     )
 
     dataset_dm.prepare_data()
     dataset_dm.setup()
     dl = dataset_dm.test_dataloader()
 
+    dict_pred = defaultdict(list)
     for mode in ["regression", "classification"]:
         if mode == "classification":
-            model_path = cfg["REPORT"]["ClassificationCheckpoint"]
+            model_path = config["REPORT"]["ClassificationCheckpoint"]
         else:
-            model_path = cfg["REPORT"]["RegressionCheckpoint"]
+            model_path = config["REPORT"]["RegressionCheckpoint"]
 
-        make_csv(mode, dl, model_path, cfg=cfg)
+        dict_pred.update(compute_predictions(mode, dl, model_path, cfg=config))
 
-    data_frame = pd.DataFrame(dict_pred, columns=["id", "classification_predictions", "regression_predictions"])
-    data_frame.to_csv('submission.csv', index=False, header=True)
+    data_frame = pd.DataFrame(dict_pred,
+                              columns=["id", "energy", "particle"])
+    data_frame.set_index("id", inplace=True)
+    data_frame.to_csv('submission.csv.gz', index=True, header=True, index_label="id")
 
 
 if __name__ == "__main__":
-    config = configparser.ConfigParser()
-    config.read("./config.ini")
-    main(cfg=config)
+    main()

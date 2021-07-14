@@ -7,17 +7,13 @@ from pytorch_lightning import seed_everything
 from idao.data_module import IDAODataModule
 from idao.model import SimpleConv
 
-seed_everything(666)
 
-
-def trainer(mode: ["classification", "regression"], cfg):
-    # init model
+def trainer(mode: ["classification", "regression"], cfg, dataset_dm):
     model = SimpleConv(mode=mode)
     if mode == "classification":
         epochs = cfg["TRAINING"]["ClassificationEpochs"]
     else:
         epochs = cfg["TRAINING"]["RegressionEpochs"]
-    # Initialize a trainer
     trainer = pl.Trainer(
         gpus=int(cfg["TRAINING"]["NumGPUs"]),
         max_epochs=int(epochs),
@@ -32,7 +28,8 @@ def trainer(mode: ["classification", "regression"], cfg):
     trainer.fit(model, dataset_dm)
 
 
-if __name__ == "__main__":
+def main():
+    seed_everything(666)
     config = configparser.ConfigParser()
     config.read("./config.ini")
 
@@ -45,4 +42,9 @@ if __name__ == "__main__":
     dataset_dm.setup()
 
     for mode in ["classification", "regression"]:
-        trainer(mode, cfg=config)
+        print(f"Training for {mode}")
+        trainer(mode, cfg=config, dataset_dm=dataset_dm)
+
+
+if __name__ == "__main__":
+    main()
