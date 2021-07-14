@@ -10,9 +10,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import scikitplot as skplt
 import torch
-from more_itertools import bucket
 
 from idao.data_module import IDAODataModule
 from idao.model import SimpleConv
