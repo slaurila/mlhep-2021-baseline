@@ -1,6 +1,6 @@
 # MLHEP-2021 Baseline
 ## Dataset
-Dataset is on CoCalc in folder `/share/competition` and is available at [Kaggle](https://www.kaggle.com/c/mlhep2021-classification/data)
+Dataset is on CoCalc in folder `/home/user/share/competition` and is available at [Kaggle](https://www.kaggle.com/c/mlhep2021-classification/data)
 
 The train and test folders contain images in `.png` format. The train filenames contain the energy and the folder names the particle class.
 
