@@ -23,6 +23,7 @@ class IDAODataModule(pl.LightningDataModule):
             transform=transforms.Compose(
                 [transforms.ToTensor(), transforms.CenterCrop(120)]
             ),
+            # TODO(kazeevn) use idiomatic torch
             target_transform=transforms.Compose(
                 [
                     lambda num: (
@@ -47,7 +48,6 @@ class IDAODataModule(pl.LightningDataModule):
         self.train, self.val = random_split(
             self.dataset, [10000, 3404], generator=torch.Generator().manual_seed(666)
         )
-        
 
     def train_dataloader(self):
         return DataLoader(self.train, self.batch_size, shuffle=True, num_workers=4)

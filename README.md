@@ -79,4 +79,6 @@ To generate `submission_classification.csv.gz` and `submission_regression.csv.gz
 ```
 python generate_submission.py
 ```
+By default, it will use the checkpoints provided in the repository, if you trained your own model,
+you should put the appropriate checkpoints into `config.ini`.
 

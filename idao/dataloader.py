@@ -8,20 +8,15 @@ from torch.utils.data import Dataset
 
 
 class IDAODataset(DatasetFolder):
-
     def name_to_energy(self, name):
-        try:
-            names = os.path.split(name)[-1].split("_")
-            idx = [i for i, v in enumerate(names) if v == "keV"][0]
-            return torch.tensor(float(names[idx - 1]))
-        except Exception as e:
-            return torch.tensor(-1.0)
+        names = os.path.split(name)[-1].split("_")
+        idx = [i for i, v in enumerate(names) if v == "keV"][0]
+        return torch.tensor(float(names[idx - 1]))
 
     def name_to_index(self, name):
         return os.path.split(name)[-1].split('.')[0]
 
     def __getitem__(self, index: int):
-
         path, target = self.samples[index]
         sample = self.loader(path)
         if self.transform is not None:

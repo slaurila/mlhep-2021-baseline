@@ -1,3 +1,5 @@
+
+
 import configparser
 import gc
 import logging
@@ -28,13 +30,12 @@ def compute_predictions(mode, dataloader, checkpoint_path, cfg):
     else:
         logging.info("Regression model loaded")
 
-    # TODO(kazevn) batch predictions
+    # TODO(kazeevn) batch predictions
     for img, name in iter(dataloader):
         if mode == "classification":
             dict_pred["id"].append(name[0].split('.')[0])
-            output = (1 if torch.round(model(img)["class"].detach()[0][0]) == 0 else 0)
+            output = model(img)["class"].detach()[0, 1].item()
             dict_pred["particle"].append(output)
-
         else:
             output = model(img)["energy"].detach()
             dict_pred["energy"].append(output[0][0].item())
@@ -51,6 +52,7 @@ def main():
     )
 
     dataset_dm.prepare_data()
+    print(dataset_dm.dataset.class_to_idx)
     dataset_dm.setup()
     dl = dataset_dm.test_dataloader()
 
