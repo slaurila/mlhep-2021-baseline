@@ -58,7 +58,7 @@ class IDAODataModule(pl.LightningDataModule):
     def test_dataloader(self):
         return DataLoader(
             self.test,
-            1,
+            self.batch_size,
             num_workers=0,
             shuffle=False
             )
