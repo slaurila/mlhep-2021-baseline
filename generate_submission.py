@@ -17,7 +17,6 @@ import torch
 from idao.data_module import IDAODataModule
 from idao.model import SimpleConv
 
-
 def compute_predictions(mode, dataloader, checkpoint_path, cfg):
     torch.multiprocessing.set_sharing_strategy("file_system")
     logging.info("Loading checkpoint")
@@ -30,15 +29,15 @@ def compute_predictions(mode, dataloader, checkpoint_path, cfg):
     else:
         logging.info("Regression model loaded")
 
-    # TODO(kazeevn) batch predictions
     for img, name in iter(dataloader):
         if mode == "classification":
-            dict_pred["id"].append(name[0].split('.')[0])
-            output = model(img)["class"].detach()[0, 1].item()
-            dict_pred["particle"].append(output)
+            dict_pred["id"].extend(map(lambda x: x.strip('.png'), name))
+            output = model(img)["class"].detach()[:, 1].numpy()
+            dict_pred["particle"].extend(output)
         else:
-            output = model(img)["energy"].detach()
-            dict_pred["energy"].append(output[0][0].item())
+            output = model(img)["energy"].detach().squeeze(1).numpy()
+            dict_pred["energy"].extend(output)
+            
     return dict_pred
 
 
@@ -48,7 +47,7 @@ def main():
     PATH = path.Path(config["DATA"]["DatasetPath"])
 
     dataset_dm = IDAODataModule(
-        data_dir=PATH, batch_size=64, cfg=config
+        data_dir=PATH, batch_size=512, cfg=config
     )
 
     dataset_dm.prepare_data()
