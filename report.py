@@ -14,6 +14,7 @@ from more_itertools import bucket
 
 from idao.data_module import IDAODataModule
 from idao.model import SimpleConv
+from idao.model import SanteriConv
 from idao.utils import delong_roc_variance
 
 
@@ -24,7 +25,7 @@ def test_variance(target, predictions):
 def run_test(mode, dataloader, checkpoint_path, cfg):
     torch.multiprocessing.set_sharing_strategy("file_system")
     logging.info("Loading checkpoint")
-    model = SimpleConv.load_from_checkpoint(checkpoint_path, mode=mode)
+    model = SanteriConv.load_from_checkpoint(checkpoint_path, mode=mode)
     model = model.cpu().eval()
     regression_predictions = []
     classification_predictions = []
@@ -150,8 +151,10 @@ def main(cfg):
     dl = dataset_dm.train_dataloader()
     mae = 0
     variance = 0
+    auc = 0
 
-    for mode in ["regression", "classification"]:
+#    for mode in ["regression", "classification"]:
+    for mode in ["regression"]:
         if mode == "classification":
             model_path = cfg["REPORT"]["ClassificationCheckpoint"]
         else:

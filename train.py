@@ -7,6 +7,7 @@ from pytorch_lightning import seed_everything
 
 from idao.data_module import IDAODataModule
 from idao.model import SimpleConv
+from idao.model import SanteriConv
 
 
 def get_free_gpu():
@@ -24,7 +25,9 @@ def get_free_gpu():
 
 
 def trainer(mode: ["classification", "regression"], cfg, dataset_dm):
-    model = SimpleConv(mode=mode)
+    model = SanteriConv(mode=mode)
+    print(model)
+    input("Press Enter to continue...")
     if cfg.getboolean("TRAINING", "UseGPU"):
         gpus = [get_free_gpu()]
     else:
@@ -41,8 +44,12 @@ def trainer(mode: ["classification", "regression"], cfg, dataset_dm):
             mode
         ),
         default_root_dir=path.Path(cfg["TRAINING"]["ModelParamsSavePath"]),
+        auto_lr_find=True
     )
 
+    # Tune the model
+    trainer.tune(model,  dataset_dm)
+    
     # Train the model ⚡
     trainer.fit(model, dataset_dm)
 
@@ -60,7 +67,8 @@ def main():
     dataset_dm.prepare_data()
     dataset_dm.setup()
 
-    for mode in ["classification", "regression"]:
+#    for mode in ["classification", "regression"]:
+    for mode in ["regression"]:
         print(f"Training for {mode}")
         trainer(mode, cfg=config, dataset_dm=dataset_dm)
 
