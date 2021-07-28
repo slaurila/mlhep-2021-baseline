@@ -56,7 +56,8 @@ def main():
     dl = dataset_dm.test_dataloader()
 
     dict_pred = defaultdict(list)
-    for mode in ["regression", "classification"]:
+#    for mode in ["regression", "classification"]:
+    for mode in ["regression"]:
         if mode == "classification":
             model_path = config["REPORT"]["ClassificationCheckpoint"]
         else:

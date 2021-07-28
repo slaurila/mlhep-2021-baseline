@@ -173,19 +173,19 @@ class SanteriConv(pl.LightningModule):
                     nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
                     nn.BatchNorm2d(64),
                     nn.ReLU(),
-                    nn.MaxPool2d(kernel_size=6, stride=1),
+                    nn.MaxPool2d(kernel_size=2, stride=2),
                     nn.Flatten(),
                 )
 
-        self.drop_out = nn.Dropout()
+        self.drop_out = nn.Dropout(p=0.3)
 
-        self.fc1 = nn.Linear(40000, 500)
-        self.fc2 = nn.Linear(500, 2)  # for classification
-        self.fc3 = nn.Linear(500, 1)  # for regression
-
+        self.fc1 = nn.Linear(14400, 1000)
+        self.fc2 = nn.Linear(1000, 2)  # for classification
+        self.fc3 = nn.Linear(1000, 1)  # for regression
+        self.relu = nn.ReLU()
 
         self.stem = nn.Sequential(
-            self.layer1, self.drop_out, self.fc1,
+            self.layer1, self.drop_out, self.fc1, self.relu,
             )
         if self.mode == "classification":
             self.classification = nn.Sequential(self.stem, self.fc2)
